@@ -1,0 +1,189 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <chrono>
+using namespace std;
+
+string generateRandomString(int length) {
+	const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	string randomString;
+
+	// Инициализация генератора случайных чисел
+	std::srand(static_cast<unsigned int>(time(0)));
+
+	for (int i = 0; i < length; ++i) {
+		int randomIndex = std::rand() % characters.size();
+		randomString += characters[randomIndex];
+	}
+
+	return randomString;
+}
+
+string selection_sort(string arr) {
+	int n = arr.length();
+	for (int i = 0; i < arr.length(); i++) {
+		int min_inx = i;
+		for (int j = i + 1; j < arr.length(); j++) {
+			if (arr[j] < arr[min_inx]) {
+				min_inx = j;
+			}
+		}
+		swap(arr[i], arr[min_inx]);
+	}
+	return arr;
+}
+
+string insertion_sort(string arr) {
+	for (int i = 1; i < arr.length(); i++) {
+		int key = arr[i];
+		int j = i - 1;
+		while (j >= 0 and arr[j] > key) {
+			arr[j + 1] = arr[j];
+			j--;
+		}
+		arr[j + 1] = key;
+	}
+	return arr;
+}
+
+string stupid_sort(string arr) {
+	srand(time(0));
+	int n = arr.length();
+	while (!is_sorted(arr.begin(), arr.end())) {
+		for (int i = n - 1; i > 0; --i) {
+			int j = rand() % (i + 1);
+			swap(arr[i], arr[j]);
+		}
+	}
+	return arr;
+}
+
+string merge(string left, string right) {
+	string result;
+	int i = 0, j = 0;
+	while (i < left.length() and j < right.length()) {
+		if (left[i] < right[j]) {
+			result += left[i];
+			i++;
+		}
+		else {
+			result += right[j];
+			j++;
+		}
+	}
+	result += left.substr(i);
+	result += right.substr(j);
+	return result;
+}
+
+string merge_sort(string arr) {
+	if (arr.length() <= 1) {
+		return arr;
+	}
+	int mid = arr.length() / 2;
+	string left = merge_sort(arr.substr(0, mid));
+	string right = merge_sort(arr.substr(mid));
+	return merge(left, right);
+}
+
+string quick_sort(string arr) {
+	if (arr.length() <= 1) {
+		return arr;
+	}
+	char pivot = arr[arr.length() / 2];
+	string left, mid, right;
+	for (char c : arr) {
+		if (c < pivot) left += c;
+		else if (c == pivot) mid += c;
+		else right += c;
+	}
+	return quick_sort(left) + mid + quick_sort(right);
+}
+
+string shell_sort(string arr) {
+	int n = arr.length();
+	int gap = n / 2;
+	while (gap > 0) {
+		for (int i = gap; i < n; i++) {
+			char tmp = arr[i];
+			int j = i;
+			while (j >= gap and arr[j - gap] > tmp) {
+				arr[j] = arr[j - gap];
+				j -= gap;
+			}
+			arr[j] = tmp;
+		}
+		gap /= 2;
+	}
+	return arr;
+}
+
+int main() {
+	string a;
+	int length;
+	int choice;
+	while (true) {
+		cout << "\nMain menu: \n";
+		cout << "1. Enter the string length\n";
+		cout << "2. Start selection_sort\n";
+		cout << "3. Start insertion_sort\n";
+		cout << "4. Start stupid_sort\n";
+		cout << "5. Start merge_sort\n";
+		cout << "6. Start quick_sort\n";
+		cout << "7. Start shell_sort\n";
+		cout << "8. Exit\n";
+		cin >> choice;
+		if (choice == 1) {
+			cout << "String length is: ";
+			cin >> length;
+			a = generateRandomString(length);
+			cout << "Random string: " << generateRandomString(length) << endl;
+		}
+		else if (choice == 2) { // Selection
+			auto start = chrono::high_resolution_clock::now();
+			cout << selection_sort(a) << endl;
+			auto stop = chrono::high_resolution_clock::now();
+			chrono::duration<double> duration = stop - start;
+			cout << "Execution time [sec]: " << duration.count() << endl;
+		}
+		else if (choice == 3) { // Insertion
+			auto start = chrono::high_resolution_clock::now();
+			cout << insertion_sort(a) << endl;
+			auto stop = chrono::high_resolution_clock::now();
+			chrono::duration<double> duration = stop - start;
+			cout << "Execution time [sec]: " << duration.count() << endl;
+		}
+		else if (choice == 4) { // Stupid
+			auto start = chrono::high_resolution_clock::now();
+			cout << stupid_sort(a) << endl;
+			auto stop = chrono::high_resolution_clock::now();
+			chrono::duration<double> duration = stop - start;
+			cout << "Execution time [sec]: " << duration.count() << endl;
+		}
+		else if (choice == 5) { // Merge
+			auto start = chrono::high_resolution_clock::now();
+			cout << merge_sort(a) << endl;
+			auto stop = chrono::high_resolution_clock::now();
+			chrono::duration<double> duration = stop - start;
+			cout << "Execution time [sec]: " << duration.count() << endl;
+		}
+		else if (choice == 6) { // Quick
+			auto start = chrono::high_resolution_clock::now();
+			cout << quick_sort(a) << endl;
+			auto stop = chrono::high_resolution_clock::now();
+			chrono::duration<double> duration = stop - start;
+			cout << "Execution time [sec]: " << duration.count() << endl;
+		}
+		else if (choice == 7) { // Shell
+			auto start = chrono::high_resolution_clock::now();
+			cout << shell_sort(a) << endl;
+			auto stop = chrono::high_resolution_clock::now();
+			chrono::duration<double> duration = stop - start;
+			cout << "Execution time [sec]: " << duration.count() << endl;
+	}
+		else if (choice == 8) return 0;
+		else return main();
+	}
+}
