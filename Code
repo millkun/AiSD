@@ -14,7 +14,7 @@ string generateRandomString(int length) {
 	std::srand(static_cast<unsigned int>(time(0)));
 
 	for (int i = 0; i < length; ++i) {
-		int randomIndex = std::rand() % characters.size();
+		int randomIndex = rand() % characters.size();
 		randomString += characters[randomIndex];
 	}
 
