@@ -1,42 +1,41 @@
 #include <iostream>
-#include <string>
+#include <vector>
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <chrono>
+#include <iomanip> // Добавьте эту библиотеку
+
 using namespace std;
 
-string generateRandomString(int length) {
-    const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    string randomString;
+vector<int> generateRandomVector(int length) {
+    vector<int> randomVector(length);
 
     // Инициализация генератора случайных чисел
     std::srand(static_cast<unsigned int>(time(0)));
 
     for (int i = 0; i < length; ++i) {
-        int randomIndex = std::rand() % characters.size();
-        randomString += characters[randomIndex];
+        randomVector[i] = rand() % 5000 + 1;
     }
 
-    return randomString;
+    return randomVector;
 }
 
-string selection_sort(string arr) {
-    int n = arr.length();
-    for (int i = 0; i < arr.length(); i++) {
+void selection_sort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n; i++) {
         int min_inx = i;
-        for (int j = i + 1; j < arr.length(); j++) {
+        for (int j = i + 1; j < n; j++) {
             if (arr[j] < arr[min_inx]) {
                 min_inx = j;
             }
         }
         swap(arr[i], arr[min_inx]);
     }
-    return arr;
 }
 
-string insertion_sort(string arr) {
-    for (int i = 1; i < arr.length(); i++) {
+void insertion_sort(vector<int>& arr) {
+    for (int i = 1; i < arr.size(); i++) {
         int key = arr[i];
         int j = i - 1;
         while (j >= 0 and arr[j] > key) {
@@ -45,57 +44,62 @@ string insertion_sort(string arr) {
         }
         arr[j + 1] = key;
     }
-    return arr;
 }
 
-string merge(string left, string right) {
-    string result;
+vector<int> merge(vector<int>& left, vector<int>& right) {
+    vector<int> result;
     int i = 0, j = 0;
-    while (i < left.length() and j < right.length()) {
+    while (i < left.size() and j < right.size()) {
         if (left[i] < right[j]) {
-            result += left[i];
+            result.push_back(left[i]);
             i++;
         }
         else {
-            result += right[j];
+            result.push_back(right[j]);
             j++;
         }
     }
-    result += left.substr(i);
-    result += right.substr(j);
+    result.insert(result.end(), left.begin() + i, left.end());
+    result.insert(result.end(), right.begin() + j, right.end());
     return result;
 }
 
-string merge_sort(string arr) {
-    if (arr.length() <= 1) {
+vector<int> merge_sort(vector<int>& arr) {
+    if (arr.size() <= 1) {
         return arr;
     }
-    int mid = arr.length() / 2;
-    string left = merge_sort(arr.substr(0, mid));
-    string right = merge_sort(arr.substr(mid));
+    int mid = arr.size() / 2;
+    vector<int> left(arr.begin(), arr.begin() + mid);
+    vector<int> right(arr.begin() + mid, arr.end());
+    left = merge_sort(left);
+    right = merge_sort(right);
     return merge(left, right);
 }
 
-string quick_sort(string arr) {
-    if (arr.length() <= 1) {
+vector<int> quick_sort(vector<int>& arr) {
+    if (arr.size() <= 1) {
         return arr;
     }
-    char pivot = arr[arr.length() / 2];
-    string left, mid, right;
-    for (char c : arr) {
-        if (c < pivot) left += c;
-        else if (c == pivot) mid += c;
-        else right += c;
+    int pivot = arr[arr.size() / 2];
+    vector<int> left, mid, right;
+    for (int c : arr) {
+        if (c < pivot) left.push_back(c);
+        else if (c == pivot) mid.push_back(c);
+        else right.push_back(c);
     }
-    return quick_sort(left) + mid + quick_sort(right);
+    vector<int> sorted_left = quick_sort(left);
+    vector<int> sorted_right = quick_sort(right);
+    sorted_left.insert(sorted_left.end(), mid.begin(), mid.end());
+    sorted_left.insert(sorted_left.end(), sorted_right.begin(), sorted_right.end());
+    return sorted_left;
 }
 
-string shell_sort(string arr) {
-    int n = arr.length();
+void shell_sort(vector<int>& arr) {
+    int n = arr.size();
     int gap = n / 2;
     while (gap > 0) {
         for (int i = gap; i < n; i++) {
-            char tmp = arr[i];
+            int tmp = arr[i];
             int j = i;
             while (j >= gap and arr[j - gap] > tmp) {
                 arr[j] = arr[j - gap];
@@ -105,16 +109,15 @@ string shell_sort(string arr) {
         }
         gap /= 2;
     }
-    return arr;
 }
 
-string hibbard_sort(string arr) {
-    int n = arr.length();
+void hibbard_sort(vector<int>& arr) {
+    int n = arr.size();
     int k = 1;
     int gap = (1 << k) - 1;
     while (gap < n) {
         for (int i = gap; i < n; i++) {
-            char tmp = arr[i];
+            int tmp = arr[i];
             int j = i;
             while (j >= gap and arr[j - gap] > tmp) {
                 arr[j] = arr[j - gap];
@@ -125,16 +128,15 @@ string hibbard_sort(string arr) {
         k++;
         gap = (1 << k) - 1;
     }
-    return arr;
 }
 
-string pratt_sort(string arr) {
-    int n = arr.length();
+void pratt_sort(vector<int>& arr) {
+    int n = arr.size();
     int k = 1;
     int gap = (1 << k) + 1;
     while (gap < n) {
         for (int i = gap; i < n; i++) {
-            char tmp = arr[i];
+            int tmp = arr[i];
             int j = i;
             while (j >= gap and arr[j - gap] > tmp) {
                 arr[j] = arr[j - gap];
@@ -145,27 +147,24 @@ string pratt_sort(string arr) {
         k++;
         gap = (1 << k) + 1;
     }
-    return arr;
 }
 
-string bubble_sort(string arr) {
-    int n = arr.length();
+void bubble_sort(vector<int>& arr) {
+    int n = arr.size();
 
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             if (arr[j] > arr[j + 1]) {
-                // Обмен символов
-                char temp = arr[j];
+                // Обмен чисел
+                int temp = arr[j];
                 arr[j] = arr[j + 1];
                 arr[j + 1] = temp;
             }
         }
     }
-
-    return arr;
 }
 
-void heapify(string& arr, int n, int root) {
+void heapify(vector<int>& arr, int n, int root) {
     int largest = root;
     int left = 2 * root + 1;
     int right = 2 * root + 2;
@@ -178,7 +177,7 @@ void heapify(string& arr, int n, int root) {
 
     if (largest != root) {
         // Обмен
-        char temp = arr[root];
+        int temp = arr[root];
         arr[root] = arr[largest];
         arr[largest] = temp;
 
@@ -186,134 +185,132 @@ void heapify(string& arr, int n, int root) {
     }
 }
 
-string heap_sort(string arr) {
-    int n = arr.length();
+void heap_sort(vector<int>& arr) {
+    int n = arr.size();
 
     for (int i = n / 2 - 1; i >= 0; i--)
         heapify(arr, n, i);
 
     for (int i = n - 1; i >= 0; i--) {
-        char temp = arr[0];
+        int temp = arr[0];
         arr[0] = arr[i];
         arr[i] = temp;
 
         heapify(arr, i, 0);
     }
-
-    return arr;
 }
 
-string generateSortedString(int length) {
-    string sortedString = generateRandomString(length);
-    sort(sortedString.begin(), sortedString.end());
-    return sortedString;
+vector<int> generateSortedVector(int length) {
+    vector<int> sortedVector = generateRandomVector(length);
+    sort(sortedVector.begin(), sortedVector.end());
+    return sortedVector;
 }
 
-string generateReverseSortedString(int length) {
-    string sortedString = generateRandomString(length);
-    sort(sortedString.begin(), sortedString.end(), greater<char>());
-    return sortedString;
+vector<int> generateReverseSortedVector(int length) {
+    vector<int> sortedVector = generateRandomVector(length);
+    sort(sortedVector.begin(), sortedVector.end(), greater<int>());
+    return sortedVector;
 }
 
-string generatePartiallySortedString(int length) {
-    string sortedString = generateSortedString(length);
+vector<int> generatePartiallySortedVector(int length) {
+    vector<int> sortedVector = generateSortedVector(length);
     int unsortedPart = length * 0.1;
     for (int i = 0; i < unsortedPart; ++i) {
         int randomIndex = rand() % length;
-        swap(sortedString[i], sortedString[randomIndex]);
+        swap(sortedVector[i], sortedVector[randomIndex]);
     }
-    return sortedString;
+    return sortedVector;
 }
 
-void runAllSorts(string arr) {
+void runAllSorts(vector<int> arr) {
     auto start = chrono::high_resolution_clock::now();
     selection_sort(arr);
     auto stop = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     insertion_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     merge_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     quick_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     shell_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     bubble_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     heap_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     hibbard_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 
     start = chrono::high_resolution_clock::now();
     pratt_sort(arr);
     stop = chrono::high_resolution_clock::now();
     duration = stop - start;
-    cout << duration.count() << endl;
+    cout << fixed << setprecision(6) << duration.count() << endl; // Используйте fixed и setprecision
 }
 
 int main() {
-    string a;
+    vector<int> a;
     int length;
     int choice;
     while (true) {
         cout << "\nMain menu: \n";
-        cout << "1. Enter the string length\n";
-        cout << "2. Generate random string\n";
-        cout << "3. Generate fully sorted string\n";
-        cout << "4. Generate reverse sorted string\n";
-        cout << "5. Generate partially sorted string\n";
+        cout << "1. Enter the vector length\n";
+        cout << "2. Generate random vector\n";
+        cout << "3. Generate fully sorted vector\n";
+        cout << "4. Generate reverse sorted vector\n";
+        cout << "5. Generate partially sorted vector\n";
         cout << "6. Run all sorts\n";
         cout << "0. Exit\n";
         cin >> choice;
         if (choice == 1) {
-            cout << "String length is: ";
+            cout << "Vector length is: ";
             cin >> length;
         }
         else if (choice == 2) {
-            a = generateRandomString(length);
-            cout << "Random string: " << a << endl;
+            a = generateRandomVector(length);
+            cout << "Random vector generated." << endl;
         }
         else if (choice == 3) {
-            a = generateSortedString(length);
-            cout << "Fully sorted string: " << a << endl;
+            a = generateSortedVector(length);
+            cout << "Fully sorted vector generated." << endl;
         }
         else if (choice == 4) {
-            a = generateReverseSortedString(length);
-            cout << "Reverse sorted string: " << a << endl;
+            a = generateReverseSortedVector(length);
+            cout << "Reverse sorted vector generated." << endl;
         }
         else if (choice == 5) {
-            a = generatePartiallySortedString(length);
-            cout << "Partially sorted string: " << a << endl;
+            a = generatePartiallySortedVector(length);
+            cout << "Partially sorted vector generated." << endl;
         }
         else if (choice == 6) {
             runAllSorts(a);
